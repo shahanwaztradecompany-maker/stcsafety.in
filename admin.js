@@ -26,3 +26,5 @@ $("#storefrontForm").addEventListener("submit",e=>{e.preventDefault();saveStore(
 $("#saveStoreDraft").addEventListener("click",()=>saveStore(false));
 $("#resetStorefront").addEventListener("click",()=>{fillStore(publishedStore);$("#storefrontStatus").textContent="Restored published settings in the editor (not saved)."});
 const originalState=state;state=async function(){await originalState();if(!$("#workspace").hidden)await loadStore()};
+
+if(!$("#workspace").hidden)await loadStore();
