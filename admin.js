@@ -28,3 +28,9 @@ $("#resetStorefront").addEventListener("click",()=>{fillStore(publishedStore);$(
 const originalState=state;state=async function(){await originalState();if(!$("#workspace").hidden)await loadStore()};
 
 if(!$("#workspace").hidden)await loadStore();
+
+const adminPageMeta={overview:["Dashboard","Your business at a glance"],products:["Products","Manage your catalogue and visibility"],storefront:["Storefront Design","Customize your website and publish changes"],users:["Team & Users","Manage authorized staff access"],enquiries:["Customer Enquiries","Review incoming leads and quote requests"],payments:["Payments","Manage Razorpay payment collection"],integrations:["Integrations","Review service connection requirements"]};
+function showAdminPage(){const id=location.hash.slice(1);const page=Object.hasOwn(adminPageMeta,id)?id:"overview";for(const section of document.querySelectorAll(".admin-page"))section.classList.toggle("admin-page-current",section.id===page);for(const link of document.querySelectorAll("#adminNav [data-page]")){const active=link.dataset.page===page;link.classList.toggle("active",active);if(active)link.setAttribute("aria-current","page");else link.removeAttribute("aria-current")}$("#adminPageTitle").textContent=adminPageMeta[page][0];$("#adminPageSubtitle").textContent=adminPageMeta[page][1];document.querySelector(".sidebar").classList.remove("sidebar-open");window.scrollTo({top:0,behavior:"instant"})}
+window.addEventListener("hashchange",showAdminPage);
+$("#adminMenuToggle").addEventListener("click",()=>document.querySelector(".sidebar").classList.toggle("sidebar-open"));
+showAdminPage();
