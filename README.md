@@ -1,24 +1,28 @@
-# STC Safety website
+# STC Safety Website and Admin
 
-A responsive, static starter storefront for STC Safety with a **local-only admin UI prototype**.
+Static frontend with Supabase-backed product catalogue, customer enquiries, and authenticated admin dashboard.
 
-## Preview
-Open `index.html` in a browser or deploy the repository to a static host (GitHub Pages, Netlify, etc.). Open `admin.html` to view the admin prototype.
+## Setup (required before live use)
+1. Create a Supabase project at https://supabase.com/dashboard.
+2. Open SQL Editor and execute `supabase/schema.sql`.
+3. In Supabase Auth, create an admin user. Enable email verification, disable public signup, and configure your site's URLs.
+4. Find the new user's UUID under Authentication > Users. In SQL Editor, run:
+   `insert into public.admin_users(user_id) values ('YOUR_AUTH_USER_UUID');`
+5. Copy your Supabase project URL and **publishable/anon** key into `config.js`. Never commit the service_role key or other secret credentials.
+6. Deploy to an HTTPS static host (GitHub Pages works for this frontend). Configure allowed Auth site URLs for your domain.
+7. Sign in at `/admin.html`. Admins can create and delete products and read enquiries. New active products appear in the public catalogue.
 
-## Important limitations
-- **The admin is not secure or production-ready.** It has no authentication, server, database or authorization.
-- Products added in admin are stored in browser localStorage only and **do not change the storefront**.
-- The enquiry form opens the visitor's email app, but **no recipient address has been configured**. It does not submit to a server or capture leads.
-- Product categories and featured items are illustrative starter content; confirm product data, prices, logos and compliance claims before publishing.
-- Brand names are text placeholders and do not imply endorsement or certification.
-- A production build needs authenticated admin routes, a backend, persistent product/media storage, an enquiry API, spam protection and deployment configuration.
+## Security and launch checklist
+- Supabase Row Level Security is enabled for all three tables; only allowlisted auth users can modify products or read enquiries.
+- The admin HTML page itself is public, but its data operations are protected by Supabase Auth + RLS. The admin user must be created and allowlisted manually.
+- The public enquiry insert endpoint is **not rate-limited** by this app. Add a CAPTCHA/Turnstile-verified server-side endpoint, spam throttling, monitoring and privacy/consent language **before** launching publicly. Avoid collecting personal data until this is complete.
+- Product image URLs must be hosted externally via HTTPS. Upload support and editing existing products are not implemented yet.
+- Verify all product specifications, brands, certifications and images before publishing.
+- Without Supabase configuration, the public page shows sample products; the enquiry form does not submit and admin sign-in is unavailable.
+- Do not consider this production-ready until deployment, security checks, testing and spam protection are completed.
 
-## Suggested production architecture
-Next.js storefront + authenticated admin; PostgreSQL with Prisma; object storage for images; role-based access; server-side validation and audit logging. Deploy to a provider supporting server-side routes. Keep secrets out of Git.
-
-## Files
-- `index.html` public storefront
-- `styles.css` responsive design
-- `app.js` public category/product samples and email handoff
-- `admin.html` demo dashboard
-- `admin.js` local-only demo product manager
+## Structure
+- `index.html`, `styles.css`, `app.js`: public storefront
+- `admin.html`, `admin.js`: authenticated product/enquiry dashboard
+- `config.js`, `db.js`: browser Supabase connection
+- `supabase/schema.sql`: database and RLS policies
